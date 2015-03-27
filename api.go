@@ -65,7 +65,7 @@ func (r *Request) URLs() ([]string, error) {
 		return []string{}, nil
 	}
 	// divide the actions into groups which respect the max number of batch actions
-	numerator := maxBatchRequests + 1
+	numerator := maxBatchRequests
 	numBatches := (numActions / numerator) + 1
 	actionBatches := make([][]action, numBatches)
 	for i, action := range r.actions {
@@ -107,6 +107,7 @@ func (r *Request) GetJSON() ([]Response, error) {
 		return nil, err
 	}
 	for _, u := range urls {
+		// fmt.Printf("Requesting URL: %v\n", u)
 		responses, errs = getJSON(u, responses, errs)
 	}
 	if len(errs) > 0 {
@@ -135,7 +136,7 @@ func getJSON(u string, responses []Response, errs []error) ([]Response, []error)
 
 	var responseJSONs []responseJSON
 	if err = decoder.Decode(&responseJSONs); err != nil {
-		errs = append(errs, fmt.Errorf("unable to decode api JSON response"))
+		errs = append(errs, fmt.Errorf("Unable to decode api JSON response: %v", err))
 		return responses, errs
 	}
 
